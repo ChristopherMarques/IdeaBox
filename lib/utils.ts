@@ -5,8 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function hexToRgb(hex: string): [number, number, number] {
+function hexToRgb(hex: string): [number, number, number] | null {
+  if (!hex || typeof hex !== "string") {
+    return null;
+  }
+
   hex = hex.replace(/^#/, "");
+
+  // Verifica se o hex é válido
+  if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
+    return null;
+  }
+
   let bigint = parseInt(hex, 16);
   let r = (bigint >> 16) & 255;
   let g = (bigint >> 8) & 255;
@@ -32,6 +42,9 @@ function relativeLuminance([r, g, b]: [number, number, number]): number {
 
 export function bestContrastingColor(hex: string): string {
   const rgb = hexToRgb(hex);
+  if (!rgb) {
+    return "#000000"; // Retorna preto como cor padrão se o hex for inválido
+  }
   const luminance = relativeLuminance(rgb);
 
   // If luminance is less than 0.5 (darker), return white, otherwise return black

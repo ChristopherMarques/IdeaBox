@@ -67,6 +67,7 @@ export default function ToolBar({
             setTool("shapes");
             addShape({
               type: "rectangle",
+              id: Date.now(),
               color: color,
               x: 0,
               y: 0,
@@ -78,10 +79,12 @@ export default function ToolBar({
         </Button>
         <Button
           variant={tool === "text" ? "default" : "ghost"}
-          onClick={() => {
+          onClick={(e) => {
             setTool("text");
+            e.stopPropagation();
             addText({
-              text: "Click and Type Here",
+              id: Date.now(),
+              text: "Type and Write Here",
               color: color,
               x: 0,
               y: 0,

@@ -49,7 +49,12 @@ export default function Shape({ shape, updateShape, removeShape }: ShapeProps) {
       }}
     >
       {renderShape()}
-      <Button variant="ghost" size="icon" onClick={removeShape}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={removeShape}
+      >
         <XIcon
           className="w-4 h-4"
           style={{ color: bestContrastingColor(shape.color) }}

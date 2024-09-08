@@ -86,6 +86,7 @@ export default function useCanvas(
 
     const handleMouseDown = (e: MouseEvent) => {
       startDrawing(e);
+      e.stopPropagation();
     };
 
     const handleMouseMove = (e: MouseEvent) => {

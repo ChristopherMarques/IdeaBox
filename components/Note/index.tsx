@@ -14,7 +14,7 @@ interface NoteProps {
 export default function Note({ note, updateNote, removeNote }: NoteProps) {
   return (
     <div
-      className="absolute p-2 rounded-md shadow-md"
+      className="absolute p-2 rounded-md shadow-md min-w-[200px] min-h-[100px]"
       style={{ left: note.x, top: note.y, backgroundColor: note.color }}
     >
       <Textarea
@@ -28,7 +28,12 @@ export default function Note({ note, updateNote, removeNote }: NoteProps) {
           className="w-6 h-6 rounded-full"
           style={{ backgroundColor: note.color }}
         />
-        <Button variant="ghost" size="icon" onClick={removeNote}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={removeNote}
+        >
           <XIcon
             className="w-4 h-4"
             style={{ color: bestContrastingColor(note.color) }}

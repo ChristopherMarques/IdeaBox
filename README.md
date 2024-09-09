@@ -58,8 +58,8 @@ For more detailed information on usage and dependencies, please check the respec
 
 ## Usage
 
-For detailed usage instructions, please refer to the [Usage](<app/(docs)/usage.md>) section in the documentation.
+For detailed usage instructions, please refer to the [Usage](app/docs/usage.md) section in the documentation.
 
 ## Dependencies
 
-For a list of dependencies and more information about them, please refer to the [Dependencies](<app/(docs)/dependencies.md>) section in the documentation.
+For a list of dependencies and more information about them, please refer to the [Dependencies](app/docs/dependencies.md) section in the documentation.

@@ -32,6 +32,7 @@ export default function Whiteboard() {
     selectedShape,
     setSelectedShape,
     clearWhiteboardState,
+    saveCanvasState,
   } = useWhiteboard();
 
   return (
@@ -50,7 +51,7 @@ export default function Whiteboard() {
             text: "New Note",
             x: 0,
             y: 0,
-            color: "#000000",
+            color: color,
           });
           setTool("note");
         }}
@@ -60,14 +61,23 @@ export default function Whiteboard() {
         setSelectedShape={setSelectedShape}
       />
       <div className="flex-1 relative">
-        <Canvas
-          tool={tool}
-          color={color}
-          thickness={thickness}
-          isErasing={isErasing}
-        />
+        <div className="z-10">
+          <Canvas
+            tool={tool}
+            color={color}
+            thickness={thickness}
+            isErasing={isErasing}
+          />
+        </div>
         <Button
-          className="absolute bottom-4 right-4"
+          variant="outline"
+          className="mt-4 absolute top-4 z-50 right-4"
+          onClick={saveCanvasState}
+        >
+          Save Drawing
+        </Button>
+        <Button
+          className="absolute bottom-4 z-50 right-4"
           onClick={clearWhiteboardState}
         >
           Clear Whiteboard

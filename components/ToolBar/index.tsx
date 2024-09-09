@@ -53,8 +53,8 @@ export default function ToolBar({
   setSelectedShape,
 }: ToolBarProps) {
   return (
-    <div className="bg-background border-r border-muted p-4 flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col p-4 bg-background border-r">
+      <div className="flex flex-col gap-4">
         <Button
           variant={tool === "pencil" ? "default" : "ghost"}
           onClick={() => {
@@ -63,7 +63,6 @@ export default function ToolBar({
           }}
         >
           <PencilIcon className="w-5 h-5" />
-
           <span className="sr-only">Pencil</span>
         </Button>
         <Button
@@ -157,7 +156,7 @@ export default function ToolBar({
         </Button>
       </div>
       <Separator />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 my-4">
         <Label htmlFor="color-picker">Color</Label>
         <Input
           id="color-picker"
@@ -167,7 +166,7 @@ export default function ToolBar({
           className="h-10 w-full"
         />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 my-4">
         <Label htmlFor="thickness-slider">Thickness</Label>
         <Slider
           id="thickness-slider"

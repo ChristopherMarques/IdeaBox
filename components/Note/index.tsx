@@ -16,6 +16,7 @@ interface NoteProps {
 
 export default function Note({ note, updateNote, removeNote }: NoteProps) {
   const [position, setPosition] = useState({ x: note.x, y: note.y });
+  const color = bestContrastingColor(note.color);
 
   useEffect(() => {
     setPosition({ x: note.x, y: note.y });
@@ -37,7 +38,7 @@ export default function Note({ note, updateNote, removeNote }: NoteProps) {
         <Textarea
           value={note.text}
           onChange={(e) => updateNote({ text: e.target.value })}
-          style={{ color: bestContrastingColor(note.color) }}
+          style={{ color: color }}
           className="bg-transparent border-none focus:ring-0 focus:outline-none resize-none"
         />
         <div className="flex justify-end gap-2">
@@ -48,10 +49,11 @@ export default function Note({ note, updateNote, removeNote }: NoteProps) {
           <Button
             variant="ghost"
             size="icon"
+            className={`text-[${color}] hover:text-red-500`}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={removeNote}
           >
-            <XIcon className="w-4 h-4 text-red-500" />
+            <XIcon className={`w-4 h-4 `} />
             <span className="sr-only">Remove Note</span>
           </Button>
         </div>

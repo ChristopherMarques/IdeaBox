@@ -1,3 +1,5 @@
+"use client";
+
 import Whiteboard from "@/components/WhiteBoard";
 import { WhiteboardProvider } from "@/contexts/WhiteboardContext";
 

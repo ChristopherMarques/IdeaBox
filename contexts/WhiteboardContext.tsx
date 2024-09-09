@@ -6,8 +6,10 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  PropsWithChildren,
 } from "react";
 import { Tool, Note, Shape, TextElement } from "@/types";
+import { toast } from "@/lib/hooks/useToast";
 
 interface WhiteboardContextType {
   tool: Tool;
@@ -69,9 +71,7 @@ const WhiteboardContext = createContext<WhiteboardContextType>({
   clearWhiteboardState: () => {},
 });
 
-export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const WhiteboardProvider = ({ children }: PropsWithChildren) => {
   const [tool, setTool] = useState<Tool>("pencil");
   const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(2);
@@ -98,6 +98,11 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
     if (canvasRef && canvasRef.current) {
       const dataURL = canvasRef.current.toDataURL();
       localStorage.setItem("canvasState", dataURL);
+      toast({
+        title: "Success!",
+        variant: "default",
+        description: "Canvas state saved",
+      });
     }
   }, [canvasRef]);
 
@@ -107,6 +112,11 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
     setTextElements([]);
     localStorage.removeItem("whiteboardState");
     localStorage.removeItem("canvasState");
+    toast({
+      title: "Success!",
+      variant: "default",
+      description: "Canvas state cleared",
+    });
     window.location.reload();
   }, []);
 
@@ -120,6 +130,11 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
         setTextElements(parsedState.textElements);
       } catch (error) {
         console.error("Error parsing saved state:", error);
+        toast({
+          title: "Error!",
+          variant: "destructive",
+          description: "Error parsing saved state",
+        });
       }
     }
   }, []);

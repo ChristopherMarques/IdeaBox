@@ -42,32 +42,40 @@ export default function useCanvas(
 
   const startDrawing = useCallback(
     (e: MouseEvent | TouchEvent) => {
-      if (!context || tool !== "pencil") return;
+      if (!context) return;
       setIsDrawing(true);
       const { x, y } = getPos(e);
       context.beginPath();
       context.moveTo(x, y);
     },
-    [context, getPos, tool]
+    [context, getPos]
   );
 
   const draw = useCallback(
     (e: MouseEvent | TouchEvent) => {
-      if (!isDrawing || !context || tool !== "pencil") return;
+      if (!isDrawing || !context) return;
       const { x, y } = getPos(e);
       context.lineTo(x, y);
-      context.strokeStyle = isErasing ? "#ffff" : color;
-      context.lineWidth = isErasing ? thickness * 2 : thickness;
+      context.strokeStyle = isErasing ? "#ffffff" : color;
+      context.lineWidth = thickness;
       context.lineCap = "round";
       context.lineJoin = "round";
+      if (isErasing) {
+        context.globalCompositeOperation = "destination-out";
+      } else {
+        context.globalCompositeOperation = "source-over";
+      }
       context.stroke();
     },
-    [isDrawing, context, color, thickness, isErasing, getPos, tool]
+    [isDrawing, context, color, thickness, isErasing, getPos]
   );
 
   const stopDrawing = useCallback(() => {
     setIsDrawing(false);
-  }, []);
+    if (context) {
+      context.beginPath();
+    }
+  }, [context]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

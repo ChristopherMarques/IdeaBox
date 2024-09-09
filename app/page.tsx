@@ -1,9 +1,12 @@
 import Whiteboard from "@/components/WhiteBoard";
+import { WhiteboardProvider } from "@/contexts/WhiteboardContext";
 
 export default function Home() {
   return (
-    <main className="w-screen h-screen">
-      <Whiteboard />
-    </main>
+    <WhiteboardProvider>
+      <main className="w-screen h-screen">
+        <Whiteboard />
+      </main>
+    </WhiteboardProvider>
   );
 }

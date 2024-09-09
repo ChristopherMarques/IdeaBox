@@ -1,8 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Draggable from "react-draggable";
 import { Shape as ShapeType } from "@/types";
 import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
-import { bestContrastingColor } from "@/lib/utils";
 
 interface ShapeProps {
   shape: ShapeType;
@@ -10,57 +12,60 @@ interface ShapeProps {
   removeShape: () => void;
 }
 
+const shapeComponents = {
+  square: (color: string) => (
+    <div className="w-48 h-48 rounded-md" style={{ backgroundColor: color }} />
+  ),
+  circle: (color: string) => (
+    <div
+      className="w-48 h-48 rounded-full"
+      style={{ backgroundColor: color }}
+    />
+  ),
+  triangle: (color: string) => (
+    <div
+      className="w-0 h-0 border-x-[50px] border-x-transparent border-b-[100px]"
+      style={{ borderBottomColor: color }}
+    />
+  ),
+};
+
 export default function Shape({ shape, updateShape, removeShape }: ShapeProps) {
+  const [position, setPosition] = useState({ x: shape.x, y: shape.y });
+
+  useEffect(() => {
+    setPosition({ x: shape.x, y: shape.y });
+  }, [shape.x, shape.y]);
+
   const renderShape = () => {
-    switch (shape.type) {
-      case "rectangle":
-        return (
-          <div
-            className="w-20 h-20 rounded-md"
-            style={{ backgroundColor: shape.color }}
-          />
-        );
-      case "circle":
-        return (
-          <div
-            className="w-20 h-20 rounded-full"
-            style={{ backgroundColor: shape.color }}
-          />
-        );
-      case "triangle":
-        return (
-          <div
-            className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px]"
-            style={{ borderColor: shape.color }}
-          />
-        );
-      default:
-        return null;
-    }
+    const ShapeComponent = shapeComponents[shape.type];
+    return (
+      <>
+        {ShapeComponent && ShapeComponent(shape.color)}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 -mt-2 -mr-2"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={removeShape}
+        >
+          <XIcon className="w-4 h-4 text-red-500" />
+          <span className="sr-only">Remove Shape</span>
+        </Button>
+      </>
+    );
   };
 
   return (
-    <div
-      className="absolute"
-      style={{ left: shape.x, top: shape.y }}
-      draggable
-      onDragEnd={(e) => {
-        updateShape({ x: e.clientX, y: e.clientY });
+    <Draggable
+      bounds="parent"
+      position={position}
+      onStop={(e, data) => {
+        setPosition({ x: data.x, y: data.y });
+        updateShape({ x: data.x, y: data.y });
       }}
     >
-      {renderShape()}
-      <Button
-        variant="ghost"
-        size="icon"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={removeShape}
-      >
-        <XIcon
-          className="w-4 h-4"
-          style={{ color: bestContrastingColor(shape.color) }}
-        />
-        <span className="sr-only">Remove Note</span>
-      </Button>
-    </div>
+      <div className="absolute">{renderShape()}</div>
+    </Draggable>
   );
 }

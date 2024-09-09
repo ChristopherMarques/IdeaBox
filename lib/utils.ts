@@ -12,7 +12,7 @@ function hexToRgb(hex: string): [number, number, number] | null {
 
   hex = hex.replace(/^#/, "");
 
-  // Verifica se o hex é válido
+  // Check if it's a valid hex color
   if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
     return null;
   }
@@ -43,7 +43,7 @@ function relativeLuminance([r, g, b]: [number, number, number]): number {
 export function bestContrastingColor(hex: string): string {
   const rgb = hexToRgb(hex);
   if (!rgb) {
-    return "#000000"; // Retorna preto como cor padrão se o hex for inválido
+    return "#000000"; // Return black if the hex color is invalid
   }
   const luminance = relativeLuminance(rgb);
 

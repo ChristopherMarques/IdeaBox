@@ -3,9 +3,9 @@
 import React from "react";
 import ToolBar from "../ToolBar";
 import Canvas from "../Canvas";
-import { useWhiteboardState } from "@/lib/hooks/useWhiteboardState";
-import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
 import WhiteboardElements from "./WhiteBoardElements";
+import { useWhiteboard } from "@/contexts/WhiteboardContext";
+import { Button } from "../ui/button";
 
 export default function Whiteboard() {
   const {
@@ -29,15 +29,10 @@ export default function Whiteboard() {
     addText,
     updateText,
     removeText,
-  } = useWhiteboardState();
-
-  const {
-    draggedElement,
-    canvasRef,
-    handleDragStart,
-    handleDrag,
-    handleDragEnd,
-  } = useDragAndDrop();
+    selectedShape,
+    setSelectedShape,
+    clearWhiteboardState,
+  } = useWhiteboard();
 
   return (
     <div className="flex h-screen">
@@ -49,27 +44,34 @@ export default function Whiteboard() {
         thickness={thickness}
         setThickness={setThickness}
         setIsErasing={setIsErasing}
-        addNote={addNote}
+        addNote={() => {
+          addNote({
+            id: Date.now(),
+            text: "New Note",
+            x: 0,
+            y: 0,
+            color: "#000000",
+          });
+          setTool("note");
+        }}
         addShape={addShape}
         addText={addText}
+        selectedShape={selectedShape || "square"}
+        setSelectedShape={setSelectedShape}
       />
-      <div
-        ref={canvasRef}
-        className="flex-1 relative overflow-hidden"
-        onMouseMove={(e) =>
-          handleDrag(e, (id, update) => {
-            if (draggedElement?.type === "note") updateNote(id, update);
-            if (draggedElement?.type === "shape") updateShape(id, update);
-            if (draggedElement?.type === "text") updateText(id, update);
-          })
-        }
-      >
+      <div className="flex-1 relative">
         <Canvas
           tool={tool}
           color={color}
           thickness={thickness}
           isErasing={isErasing}
         />
+        <Button
+          className="absolute bottom-4 right-4"
+          onClick={clearWhiteboardState}
+        >
+          Clear Whiteboard
+        </Button>
         <WhiteboardElements
           notes={notes}
           shapes={shapes}
@@ -80,8 +82,6 @@ export default function Whiteboard() {
           removeShape={removeShape}
           updateText={updateText}
           removeText={removeText}
-          handleDragStart={handleDragStart}
-          draggedElement={draggedElement}
         />
       </div>
     </div>

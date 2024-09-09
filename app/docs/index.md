@@ -29,37 +29,25 @@ IdeaBox is a versatile digital whiteboard built using Next.js, React, and TypeSc
 To get started with IdeaBox, follow these steps:
 
 1. Clone the repository:
-
-   ```
+   ```bash
    git clone https://github.com/your-username/ideabox.git
    ```
 
 2. Navigate to the project directory:
-
-   ```
+   ```bash
    cd ideabox
    ```
 
 3. Install dependencies:
-
-   ```
+   ```bash
    npm install
    ```
 
 4. Run the development server:
-
-   ```
+   ```bash
    npm run dev
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
 
 For more detailed information on usage and dependencies, please check the respective sections in the documentation.
-
-## Usage
-
-For detailed usage instructions, please refer to the [Usage](<app/(docs)/usage.md>) section in the documentation.
-
-## Dependencies
-
-For a list of dependencies and more information about them, please refer to the [Dependencies](<app/(docs)/dependencies.md>) section in the documentation.

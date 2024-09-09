@@ -1,4 +1,4 @@
-export type Tool = "pencil" | "eraser" | "shapes" | "text";
+export type Tool = "pencil" | "eraser" | "shapes" | "text" | "note";
 
 export interface Note {
   id: number;
@@ -9,8 +9,8 @@ export interface Note {
 }
 
 export interface Shape {
-  type: "rectangle" | "circle" | "triangle";
   id: number;
+  type: "square" | "circle" | "triangle";
   color: string;
   x: number;
   y: number;

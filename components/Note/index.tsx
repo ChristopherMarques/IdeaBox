@@ -1,9 +1,12 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
 import { Note as NoteType } from "@/types";
 import { bestContrastingColor } from "@/lib/utils";
+import Draggable from "react-draggable";
 
 interface NoteProps {
   note: NoteType;
@@ -12,35 +15,47 @@ interface NoteProps {
 }
 
 export default function Note({ note, updateNote, removeNote }: NoteProps) {
+  const [position, setPosition] = useState({ x: note.x, y: note.y });
+
+  useEffect(() => {
+    setPosition({ x: note.x, y: note.y });
+  }, [note.x, note.y]);
+
   return (
-    <div
-      className="absolute p-2 rounded-md shadow-md min-w-[200px] min-h-[100px]"
-      style={{ left: note.x, top: note.y, backgroundColor: note.color }}
+    <Draggable
+      bounds="parent"
+      position={position}
+      onStop={(e, data) => {
+        setPosition({ x: data.x, y: data.y });
+        updateNote({ x: data.x, y: data.y });
+      }}
     >
-      <Textarea
-        value={note.text}
-        onChange={(e) => updateNote({ text: e.target.value })}
-        style={{ color: bestContrastingColor(note.color) }}
-        className="bg-transparent border-none focus:ring-0 focus:outline-none resize-none"
-      />
-      <div className="flex justify-end gap-2">
-        <div
-          className="w-6 h-6 rounded-full"
-          style={{ backgroundColor: note.color }}
+      <div
+        className="absolute p-2 rounded-md shadow-md min-w-[200px] min-h-[100px]"
+        style={{ backgroundColor: note.color }}
+      >
+        <Textarea
+          value={note.text}
+          onChange={(e) => updateNote({ text: e.target.value })}
+          style={{ color: bestContrastingColor(note.color) }}
+          className="bg-transparent border-none focus:ring-0 focus:outline-none resize-none"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={removeNote}
-        >
-          <XIcon
-            className="w-4 h-4"
-            style={{ color: bestContrastingColor(note.color) }}
+        <div className="flex justify-end gap-2">
+          <div
+            className="w-6 h-6 rounded-full"
+            style={{ backgroundColor: note.color }}
           />
-          <span className="sr-only">Remove Note</span>
-        </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={removeNote}
+          >
+            <XIcon className="w-4 h-4 text-red-500" />
+            <span className="sr-only">Remove Note</span>
+          </Button>
+        </div>
       </div>
-    </div>
+    </Draggable>
   );
 }

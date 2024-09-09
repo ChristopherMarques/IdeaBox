@@ -16,8 +16,8 @@ export default function useCanvas(
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
-  const getMousePos = useCallback(
-    (e: MouseEvent): Position => {
+  const getPos = useCallback(
+    (e: MouseEvent | TouchEvent): Position => {
       const canvas = canvasRef.current;
       if (!canvas) return { x: 0, y: 0 };
 
@@ -25,29 +25,36 @@ export default function useCanvas(
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
 
-      return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY,
-      };
+      if ("touches" in e) {
+        return {
+          x: (e.touches[0].clientX - rect.left) * scaleX,
+          y: (e.touches[0].clientY - rect.top) * scaleY,
+        };
+      } else {
+        return {
+          x: (e.clientX - rect.left) * scaleX,
+          y: (e.clientY - rect.top) * scaleY,
+        };
+      }
     },
     [canvasRef]
   );
 
   const startDrawing = useCallback(
-    (e: MouseEvent) => {
-      if (!context) return;
+    (e: MouseEvent | TouchEvent) => {
+      if (!context || tool !== "pencil") return;
       setIsDrawing(true);
-      const { x, y } = getMousePos(e);
+      const { x, y } = getPos(e);
       context.beginPath();
       context.moveTo(x, y);
     },
-    [context, getMousePos]
+    [context, getPos, tool]
   );
 
   const draw = useCallback(
-    (e: MouseEvent) => {
-      if (!isDrawing || !context) return;
-      const { x, y } = getMousePos(e);
+    (e: MouseEvent | TouchEvent) => {
+      if (!isDrawing || !context || tool !== "pencil") return;
+      const { x, y } = getPos(e);
       context.lineTo(x, y);
       context.strokeStyle = isErasing ? "#ffff" : color;
       context.lineWidth = isErasing ? thickness * 2 : thickness;
@@ -55,7 +62,7 @@ export default function useCanvas(
       context.lineJoin = "round";
       context.stroke();
     },
-    [isDrawing, context, color, thickness, isErasing, getMousePos]
+    [isDrawing, context, color, thickness, isErasing, getPos, tool]
   );
 
   const stopDrawing = useCallback(() => {
@@ -84,29 +91,25 @@ export default function useCanvas(
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    const handleMouseDown = (e: MouseEvent) => {
-      startDrawing(e);
-      e.stopPropagation();
-    };
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      draw(e);
-    };
-
-    const handleMouseUp = () => {
-      stopDrawing();
-    };
-
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mouseout", handleMouseUp);
+    canvas.addEventListener("touchstart", startDrawing);
+    canvas.addEventListener("touchmove", draw);
+    canvas.addEventListener("touchend", stopDrawing);
 
     return () => {
-      canvas.removeEventListener("mousedown", handleMouseDown);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("mouseout", handleMouseUp);
+      canvas.removeEventListener("mousedown", startDrawing);
+      canvas.removeEventListener("mousemove", draw);
+      canvas.removeEventListener("mouseup", stopDrawing);
+      canvas.removeEventListener("mouseout", stopDrawing);
+
+      canvas.removeEventListener("touchstart", startDrawing);
+      canvas.removeEventListener("touchmove", draw);
+      canvas.removeEventListener("touchend", stopDrawing);
+
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [canvasRef, startDrawing, draw, stopDrawing]);

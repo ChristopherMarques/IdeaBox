@@ -10,8 +10,18 @@ import {
   ShapesIcon,
   TypeIcon,
   PlusIcon,
+  SquareIcon,
+  CircleIcon,
+  TriangleIcon,
 } from "lucide-react";
 import { Shape, TextElement, Tool } from "@/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface ToolBarProps {
   tool: Tool;
@@ -24,6 +34,8 @@ interface ToolBarProps {
   addNote: () => void;
   addShape: (shape: Shape) => void;
   addText: (text: TextElement) => void;
+  selectedShape: Shape["type"];
+  setSelectedShape: (shape: Shape["type"]) => void;
 }
 
 export default function ToolBar({
@@ -37,6 +49,8 @@ export default function ToolBar({
   addNote,
   addShape,
   addText,
+  selectedShape,
+  setSelectedShape,
 }: ToolBarProps) {
   return (
     <div className="bg-background border-r border-muted p-4 flex flex-col gap-4">
@@ -49,6 +63,7 @@ export default function ToolBar({
           }}
         >
           <PencilIcon className="w-5 h-5" />
+
           <span className="sr-only">Pencil</span>
         </Button>
         <Button
@@ -61,22 +76,64 @@ export default function ToolBar({
           <EraserIcon className="w-5 h-5" />
           <span className="sr-only">Eraser</span>
         </Button>
-        <Button
-          variant={tool === "shapes" ? "default" : "ghost"}
-          onClick={() => {
-            setTool("shapes");
-            addShape({
-              type: "rectangle",
-              id: Date.now(),
-              color: color,
-              x: 0,
-              y: 0,
-            });
-          }}
-        >
-          <ShapesIcon className="w-5 h-5" />
-          <span className="sr-only">Shapes</span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant={tool === "shapes" ? "default" : "ghost"}>
+              <ShapesIcon className="w-5 h-5" />
+              <span className="sr-only">Shapes</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() => {
+                setTool("shapes");
+                setSelectedShape("square");
+                addShape({
+                  type: "square",
+                  id: Date.now(),
+                  color: color,
+                  x: 0,
+                  y: 0,
+                });
+              }}
+            >
+              <SquareIcon className="w-4 h-4 mr-2" />
+              Square
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setTool("shapes");
+                setSelectedShape("circle");
+                addShape({
+                  type: "circle",
+                  id: Date.now(),
+                  color: color,
+                  x: 0,
+                  y: 0,
+                });
+              }}
+            >
+              <CircleIcon className="w-4 h-4 mr-2" />
+              Circle
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setTool("shapes");
+                setSelectedShape("triangle");
+                addShape({
+                  type: "triangle",
+                  id: Date.now(),
+                  color: color,
+                  x: 0,
+                  y: 0,
+                });
+              }}
+            >
+              <TriangleIcon className="w-4 h-4 mr-2" />
+              Triangle
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           variant={tool === "text" ? "default" : "ghost"}
           onClick={(e) => {
@@ -120,6 +177,13 @@ export default function ToolBar({
           onValueChange={(value) => setThickness(value[0])}
           className="[&>span:first-child]:h-1 [&>span:first-child]:bg-primary [&_[role=slider]]:bg-primary [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-primary [&_[role=slider]:focus-visible]:ring-0 [&_[role=slider]:focus-visible]:ring-offset-0 [&_[role=slider]:focus-visible]:scale-105 [&_[role=slider]:focus-visible]:transition-transform"
         />
+      </div>
+      <div className="mt-auto">
+        <Link href="/docs">
+          <Button variant="outline" className="w-full">
+            Documentation
+          </Button>
+        </Link>
       </div>
     </div>
   );

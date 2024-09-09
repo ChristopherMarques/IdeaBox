@@ -48,5 +48,5 @@ export function bestContrastingColor(hex: string): string {
   const luminance = relativeLuminance(rgb);
 
   // If luminance is less than 0.5 (darker), return white, otherwise return black
-  return luminance < 0.5 ? "#FFFFFF" : "#000000";
+  return luminance < 0.5 ? "#fff" : "#000000";
 }

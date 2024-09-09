@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from "react";
 import useCanvas from "@/lib/hooks/useCanvas";
 import { Tool } from "@/types";
 import { useWhiteboard } from "@/contexts/WhiteboardContext";
+import { DrawingCommand } from "@/types";
 
 interface CanvasProps {
   tool: Tool;
@@ -19,52 +20,48 @@ export default function Canvas({
   isErasing,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { saveCanvasState } = useWhiteboard();
+  const { saveCanvasState, loadCanvasState } = useWhiteboard();
 
-  const { isDrawing } = useCanvas(canvasRef, tool, color, thickness, isErasing);
+  const { isDrawing, drawingCommands } = useCanvas(
+    canvasRef,
+    tool,
+    color,
+    thickness,
+    isErasing
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        const savedCanvasState = localStorage.getItem("canvasState");
-        if (savedCanvasState) {
-          const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0);
-          };
-          img.src = savedCanvasState;
+        const savedCommands = loadCanvasState();
+        if (savedCommands) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          savedCommands.forEach((command) => {
+            ctx.beginPath();
+            ctx.moveTo(command.startX, command.startY);
+            ctx.lineTo(command.endX, command.endY);
+            ctx.globalCompositeOperation =
+              command.type === "erase" ? "destination-out" : "source-over";
+            ctx.strokeStyle = command.color;
+            ctx.lineWidth = command.thickness;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.stroke();
+          });
         }
       }
     }
-  }, [canvasRef]);
+  }, [loadCanvasState]);
 
   useEffect(() => {
     if (!isDrawing) {
-      saveCanvasState();
+      saveCanvasState(drawingCommands as DrawingCommand[]); // Use type assertion aqui
     }
-  }, [isDrawing, saveCanvasState]);
+  }, [isDrawing, drawingCommands, saveCanvasState]);
 
-  useEffect(() => {
-    const saveCanvasState = () => {
-      if (canvasRef.current) {
-        const dataURL = canvasRef.current.toDataURL();
-        localStorage.setItem("canvasState", dataURL);
-      }
-    };
-
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.addEventListener("mouseup", saveCanvasState);
-      canvas.addEventListener("touchend", saveCanvasState);
-
-      return () => {
-        canvas.removeEventListener("mouseup", saveCanvasState);
-        canvas.removeEventListener("touchend", saveCanvasState);
-      };
-    }
-  }, [canvasRef]);
+  console.log("isErasing", isErasing);
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }

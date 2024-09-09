@@ -1,5 +1,5 @@
 import { useState, useEffect, RefObject, useCallback } from "react";
-import { Tool } from "@/types";
+import { DrawingCommand, Tool } from "@/types";
 
 interface Position {
   x: number;
@@ -15,6 +15,7 @@ export default function useCanvas(
 ) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
+  const [drawingCommands, setDrawingCommands] = useState<DrawingCommand[]>([]);
 
   const getPos = useCallback(
     (e: MouseEvent | TouchEvent): Position => {
@@ -56,11 +57,44 @@ export default function useCanvas(
       if (!isDrawing || !context || tool !== "pencil") return;
       const { x, y } = getPos(e);
       context.lineTo(x, y);
+      context.globalCompositeOperation = isErasing
+        ? "destination-out"
+        : "source-over";
       context.strokeStyle = isErasing ? "#ffff" : color;
       context.lineWidth = isErasing ? thickness * 2 : thickness;
       context.lineCap = "round";
       context.lineJoin = "round";
       context.stroke();
+
+      setDrawingCommands((prev) => {
+        const lastCommand = prev[prev.length - 1];
+        if (
+          lastCommand &&
+          lastCommand.type === (isErasing ? "erase" : "draw")
+        ) {
+          return [
+            ...prev.slice(0, -1),
+            {
+              ...lastCommand,
+              endX: x,
+              endY: y,
+            },
+          ];
+        } else {
+          return [
+            ...prev,
+            {
+              type: isErasing ? "erase" : "draw",
+              startX: x,
+              startY: y,
+              endX: x,
+              endY: y,
+              color: isErasing ? "#ffffff" : color,
+              thickness: isErasing ? thickness * 2 : thickness,
+            },
+          ];
+        }
+      });
     },
     [isDrawing, context, color, thickness, isErasing, getPos, tool]
   );
@@ -114,5 +148,5 @@ export default function useCanvas(
     };
   }, [canvasRef, startDrawing, draw, stopDrawing]);
 
-  return { isDrawing };
+  return { isDrawing, drawingCommands };
 }

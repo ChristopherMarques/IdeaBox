@@ -21,7 +21,7 @@ IdeaBox is a versatile digital whiteboard built using Next.js, React, and TypeSc
 - Insert and manipulate shapes (squares, circles, triangles)
 - Add and edit text elements
 - Eraser tool for corrections
-- Responsive design for various screen sizes
+- Functioalities works on all devices
 - Local storage for persisting whiteboard state
 
 ## Getting Started
@@ -29,21 +29,25 @@ IdeaBox is a versatile digital whiteboard built using Next.js, React, and TypeSc
 To get started with IdeaBox, follow these steps:
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/ideabox.git
    ```
 
 2. Navigate to the project directory:
+
    ```bash
    cd ideabox
    ```
 
 3. Install dependencies:
+
    ```bash
    npm install
    ```
 
 4. Run the development server:
+
    ```bash
    npm run dev
    ```

@@ -1,9 +1,10 @@
-// This is the root layout component for your Next.js app.
-// Learn more: https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required
+"use client";
+
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { PropsWithChildren } from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontHeading = Inter({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function Layout({ children }: PropsWithChildren) {
       <body
         className={cn("antialiased", fontHeading.variable, fontBody.variable)}
       >
+        <Toaster />
         {children}
       </body>
     </html>

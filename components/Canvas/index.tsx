@@ -2,9 +2,8 @@
 
 import React, { useRef, useEffect } from "react";
 import useCanvas from "@/lib/hooks/useCanvas";
-import { Tool } from "@/types";
 import { useWhiteboard } from "@/contexts/WhiteboardContext";
-import { DrawingCommand } from "@/types";
+import { Tool } from "@/types";
 
 interface CanvasProps {
   tool: Tool;
@@ -20,46 +19,41 @@ export default function Canvas({
   isErasing,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { saveCanvasState, loadCanvasState } = useWhiteboard();
-
-  const { isDrawing, drawingCommands } = useCanvas(
-    canvasRef,
-    tool,
-    color,
-    thickness,
-    isErasing
-  );
+  const { isDrawing } = useCanvas(canvasRef, tool, color, thickness, isErasing);
+  const { setCanvasRef } = useWhiteboard();
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        const savedCommands = loadCanvasState();
-        if (savedCommands) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          savedCommands.forEach((command) => {
-            ctx.beginPath();
-            ctx.moveTo(command.startX, command.startY);
-            ctx.lineTo(command.endX, command.endY);
-            ctx.globalCompositeOperation =
-              command.type === "erase" ? "destination-out" : "source-over";
-            ctx.strokeStyle = command.color;
-            ctx.lineWidth = command.thickness;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.stroke();
-          });
-        }
+    if (canvasRef.current) {
+      setCanvasRef(canvasRef);
+    }
+  }, [setCanvasRef]);
+
+  useEffect(() => {
+    const loadSavedCanvasState = () => {
+      const savedState = localStorage.getItem("canvasState");
+      if (savedState && canvasRef.current) {
+        const img = new Image();
+        img.onload = () => {
+          const ctx = canvasRef.current?.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+          }
+        };
+        img.src = savedState;
       }
-    }
-  }, [loadCanvasState]);
+    };
 
-  useEffect(() => {
-    if (!isDrawing) {
-      saveCanvasState(drawingCommands as DrawingCommand[]); // Use type assertion aqui
-    }
-  }, [isDrawing, drawingCommands, saveCanvasState]);
+    loadSavedCanvasState();
+  }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute top-0 left-0 w-full h-full"
+      style={{
+        touchAction: "none",
+        cursor: isDrawing || isErasing ? "crosshair" : "default",
+      }}
+    />
+  );
 }

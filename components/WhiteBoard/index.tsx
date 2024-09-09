@@ -32,6 +32,7 @@ export default function Whiteboard() {
     selectedShape,
     setSelectedShape,
     clearWhiteboardState,
+    saveCanvasState,
   } = useWhiteboard();
 
   return (
@@ -68,6 +69,13 @@ export default function Whiteboard() {
             isErasing={isErasing}
           />
         </div>
+        <Button
+          variant="outline"
+          className="mt-4 absolute top-4 z-50 right-4"
+          onClick={saveCanvasState}
+        >
+          Save Drawing
+        </Button>
         <Button
           className="absolute bottom-4 z-50 right-4"
           onClick={clearWhiteboardState}

@@ -6,8 +6,10 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  PropsWithChildren,
 } from "react";
-import { Tool, Note, Shape, TextElement, DrawingCommand } from "@/types";
+import { Tool, Note, Shape, TextElement } from "@/types";
+import { toast } from "@/lib/hooks/useToast";
 
 interface WhiteboardContextType {
   tool: Tool;
@@ -35,8 +37,7 @@ interface WhiteboardContextType {
   canvasRef: React.RefObject<HTMLCanvasElement> | null;
   setCanvasRef: (ref: React.RefObject<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
-  saveCanvasState: (commands: DrawingCommand[]) => void;
-  loadCanvasState: () => DrawingCommand[] | null;
+  saveCanvasState: () => void;
   clearWhiteboardState: () => void;
 }
 
@@ -67,13 +68,10 @@ const WhiteboardContext = createContext<WhiteboardContextType>({
   setCanvasRef: () => {},
   clearCanvas: () => {},
   saveCanvasState: () => {},
-  loadCanvasState: () => null,
   clearWhiteboardState: () => {},
 });
 
-export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const WhiteboardProvider = ({ children }: PropsWithChildren) => {
   const [tool, setTool] = useState<Tool>("pencil");
   const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(2);
@@ -96,22 +94,17 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [canvasRef]);
 
-  const saveCanvasState = useCallback((commands: DrawingCommand[]) => {
-    localStorage.setItem("canvasState", JSON.stringify(commands));
-  }, []);
-
-  const loadCanvasState = useCallback(() => {
-    const savedState = localStorage.getItem("canvasState");
-    if (savedState) {
-      try {
-        return JSON.parse(savedState);
-      } catch (error) {
-        console.error("Error parsing canvas state:", error);
-        return null;
-      }
+  const saveCanvasState = useCallback(() => {
+    if (canvasRef && canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL();
+      localStorage.setItem("canvasState", dataURL);
+      toast({
+        title: "Success!",
+        variant: "default",
+        description: "Canvas state saved",
+      });
     }
-    return null;
-  }, []);
+  }, [canvasRef]);
 
   const clearWhiteboardState = useCallback(() => {
     setNotes([]);
@@ -119,6 +112,11 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
     setTextElements([]);
     localStorage.removeItem("whiteboardState");
     localStorage.removeItem("canvasState");
+    toast({
+      title: "Success!",
+      variant: "default",
+      description: "Canvas state cleared",
+    });
     window.location.reload();
   }, []);
 
@@ -127,11 +125,16 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
     if (savedState) {
       try {
         const parsedState = JSON.parse(savedState);
-        setNotes(parsedState.notes || []);
-        setShapes(parsedState.shapes || []);
-        setTextElements(parsedState.textElements || []);
+        setNotes(parsedState.notes);
+        setShapes(parsedState.shapes);
+        setTextElements(parsedState.textElements);
       } catch (error) {
         console.error("Error parsing saved state:", error);
+        toast({
+          title: "Error!",
+          variant: "destructive",
+          description: "Error parsing saved state",
+        });
       }
     }
   }, []);
@@ -200,7 +203,6 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
         setCanvasRef,
         clearCanvas,
         saveCanvasState,
-        loadCanvasState,
         clearWhiteboardState,
       }}
     >

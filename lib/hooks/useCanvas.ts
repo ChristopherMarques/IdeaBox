@@ -1,5 +1,5 @@
 import { useState, useEffect, RefObject, useCallback } from "react";
-import { DrawingCommand, Tool } from "@/types";
+import { Tool } from "@/types";
 
 interface Position {
   x: number;
@@ -15,7 +15,6 @@ export default function useCanvas(
 ) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
-  const [drawingCommands, setDrawingCommands] = useState<DrawingCommand[]>([]);
 
   const getPos = useCallback(
     (e: MouseEvent | TouchEvent): Position => {
@@ -43,65 +42,40 @@ export default function useCanvas(
 
   const startDrawing = useCallback(
     (e: MouseEvent | TouchEvent) => {
-      if (!context || tool !== "pencil") return;
+      if (!context) return;
       setIsDrawing(true);
       const { x, y } = getPos(e);
       context.beginPath();
       context.moveTo(x, y);
     },
-    [context, getPos, tool]
+    [context, getPos]
   );
 
   const draw = useCallback(
     (e: MouseEvent | TouchEvent) => {
-      if (!isDrawing || !context || tool !== "pencil") return;
+      if (!isDrawing || !context) return;
       const { x, y } = getPos(e);
       context.lineTo(x, y);
-      context.globalCompositeOperation = isErasing
-        ? "destination-out"
-        : "source-over";
-      context.strokeStyle = isErasing ? "#ffff" : color;
-      context.lineWidth = isErasing ? thickness * 2 : thickness;
+      context.strokeStyle = isErasing ? "#ffffff" : color;
+      context.lineWidth = thickness;
       context.lineCap = "round";
       context.lineJoin = "round";
+      if (isErasing) {
+        context.globalCompositeOperation = "destination-out";
+      } else {
+        context.globalCompositeOperation = "source-over";
+      }
       context.stroke();
-
-      setDrawingCommands((prev) => {
-        const lastCommand = prev[prev.length - 1];
-        if (
-          lastCommand &&
-          lastCommand.type === (isErasing ? "erase" : "draw")
-        ) {
-          return [
-            ...prev.slice(0, -1),
-            {
-              ...lastCommand,
-              endX: x,
-              endY: y,
-            },
-          ];
-        } else {
-          return [
-            ...prev,
-            {
-              type: isErasing ? "erase" : "draw",
-              startX: x,
-              startY: y,
-              endX: x,
-              endY: y,
-              color: isErasing ? "#ffffff" : color,
-              thickness: isErasing ? thickness * 2 : thickness,
-            },
-          ];
-        }
-      });
     },
-    [isDrawing, context, color, thickness, isErasing, getPos, tool]
+    [isDrawing, context, color, thickness, isErasing, getPos]
   );
 
   const stopDrawing = useCallback(() => {
     setIsDrawing(false);
-  }, []);
+    if (context) {
+      context.beginPath();
+    }
+  }, [context]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -148,5 +122,5 @@ export default function useCanvas(
     };
   }, [canvasRef, startDrawing, draw, stopDrawing]);
 
-  return { isDrawing, drawingCommands };
+  return { isDrawing };
 }

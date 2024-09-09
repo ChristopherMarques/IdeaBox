@@ -23,13 +23,3 @@ export interface TextElement {
   x: number;
   y: number;
 }
-
-export interface DrawingCommand {
-  type: 'draw' | 'erase';
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-  color: string;
-  thickness: number;
-}

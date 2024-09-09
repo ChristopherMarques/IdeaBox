@@ -49,11 +49,11 @@ export default function Note({ note, updateNote, removeNote }: NoteProps) {
           <Button
             variant="ghost"
             size="icon"
-            className={`text-[${color}] hover:text-red-500`}
+            style={{ color: color }}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={removeNote}
           >
-            <XIcon className={`w-4 h-4 `} />
+            <XIcon className={`w-4 h-4`} />
             <span className="sr-only">Remove Note</span>
           </Button>
         </div>

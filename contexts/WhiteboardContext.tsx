@@ -132,7 +132,6 @@ export const WhiteboardProvider: React.FC<{ children: React.ReactNode }> = ({
         setTextElements(parsedState.textElements || []);
       } catch (error) {
         console.error("Error parsing saved state:", error);
-        // Optionally, you could set default values here
       }
     }
   }, []);

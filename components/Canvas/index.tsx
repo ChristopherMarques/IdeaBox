@@ -61,7 +61,5 @@ export default function Canvas({
     }
   }, [isDrawing, drawingCommands, saveCanvasState]);
 
-  console.log("isErasing", isErasing);
-
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }

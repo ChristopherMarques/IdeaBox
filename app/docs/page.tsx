@@ -14,6 +14,7 @@ export default function DocsPage() {
   return (
     <div className="prose max-w-none">
       {Markdoc.renderers.react(rendered, React, { components })}
+      {components.ReturnButton()}
     </div>
   );
 }

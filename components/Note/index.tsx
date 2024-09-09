@@ -37,6 +37,7 @@ export default function Note({ note, updateNote, removeNote }: NoteProps) {
       >
         <Textarea
           value={note.text}
+          placeholder="New Note (write here)"
           onChange={(e) => updateNote({ text: e.target.value })}
           style={{ color: color }}
           className="bg-transparent border-none focus:ring-0 focus:outline-none resize-none"

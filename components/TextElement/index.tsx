@@ -36,6 +36,7 @@ export default function TextElement({
       <div className="absolute">
         <Textarea
           value={textElement.text}
+          placeholder="Type and Write Here"
           onChange={(e) => updateText({ text: e.target.value })}
           style={{ color: textElement.color }}
           className="bg-transparent border-accent focus:ring-0 focus:outline-none resize-none min-w-[200px] min-h-full"

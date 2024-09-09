@@ -140,7 +140,7 @@ export default function ToolBar({
             e.stopPropagation();
             addText({
               id: Date.now(),
-              text: "Type and Write Here",
+              text: "",
               color: color,
               x: 0,
               y: 0,

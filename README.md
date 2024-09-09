@@ -21,7 +21,7 @@ IdeaBox is a versatile digital whiteboard built using Next.js, React, and TypeSc
 - Insert and manipulate shapes (squares, circles, triangles)
 - Add and edit text elements
 - Eraser tool for corrections
-- Responsive design for various screen sizes
+- Functioalities works on all devices
 - Local storage for persisting whiteboard state
 
 ## Getting Started

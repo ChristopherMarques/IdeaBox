@@ -37,10 +37,10 @@ IdeaBox provides an intuitive interface for creating and manipulating various el
 
 ## Saving and Loading
 
-The app automatically saves your work to local storage. When you reload the page, your previous work will be restored.
+The app have a save button to save your work to local storage. When you reload the page, your previous work will be restored.
 
 ## Clearing the Canvas
 
-To clear the entire canvas and start fresh, you can implement a clear function in the `WhiteboardContext` and add a clear button to the toolbar.
+To clear the whiteboard, you can click the clear button "Clear Whiteboard" bottom right of the screen.
 
 Remember that all elements (notes, shapes, and text) can be manipulated after they're added to the canvas. You can drag them around, edit their content, and delete them as needed.

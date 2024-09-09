@@ -48,7 +48,7 @@ export default function Whiteboard() {
         addNote={() => {
           addNote({
             id: Date.now(),
-            text: "New Note",
+            text: "",
             x: 0,
             y: 0,
             color: color,
